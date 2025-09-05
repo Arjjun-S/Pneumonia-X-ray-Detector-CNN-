@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pneumonia Detector</title>
+  <style>
+    /* ===== GLOBAL STYLES ===== */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4fef4; /* soft light green */
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      background-color: #2e7d32; /* dark green header */
+      color: white;
+      padding: 20px;
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .container {
+      margin-top: 30px;
+      padding: 20px;
+      background: white;
+      width: 380px;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 15px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* ===== CUSTOM UPLOAD BUTTON ===== */
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+
+    .file-input {
+      font-size: 100px; /* hide the default file input */
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      background-color: #4caf50;
+      color: white;
+      font-size: 16px;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .upload-btn:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+
+    /* ===== PREDICT BUTTON ===== */
+    .predict-btn {
+      background-color: #2e7d32;
+      color: white;
+      padding: 10px 25px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .predict-btn:hover {
+      background-color: #256d27;
+      transform: scale(1.05);
+    }
+
+    /* ===== IMAGE PREVIEW ===== */
+    #preview {
+      margin-top: 15px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      border: 2px solid #2e7d32;
+      display: none;
+    }
+
+    /* ===== RESULT TEXT ===== */
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #2e7d32;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      margin-top: 30px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pneumonia Detector</h1>
+
+  <div class="container">
+    <p>Upload a chest X-ray image to check if it's Normal or Pneumonia.</p>
+
+    <!-- Custom upload button -->
+    <div class="file-input-wrapper">
+      <button class="upload-btn">📂 Choose Image</button>
+      <input type="file" class="file-input" id="fileInput" accept="image/*" onchange="previewImage(event)">
+    </div>
+
+    <br>
+    <img id="preview" alt="Uploaded Preview" />
+    <br><br>
+
+    <!-- Predict button -->
+    <button class="predict-btn" onclick="predict()">Upload & Predict</button>
+
+    <p id="result"></p>
+  </div>
+
+  <footer>
+    &copy; 2025 Pneumonia Detection System
+  </footer>
+
+  <script>
+    const preview = document.getElementById("preview");
+    const resultElement = document.getElementById("result");
+    const fileInput = document.getElementById("fileInput");
+
+    // Show image preview
+    function previewImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Predict function
+    async function predict() {
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Please select a file first!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      resultElement.textContent = "Processing...";
+      resultElement.style.color = "#ff9800"; // orange while loading
+
+      try {
+        const response = await fetch("http://127.0.0.1:5000/predict", {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.prediction === "PNEUMONIA") {
+          resultElement.textContent = `⚠️ Prediction: ${data.prediction} (Confidence: ${data.confidence})`;
+          resultElement.style.color = "#d32f2f"; // red for pneumonia
+        } else {
+          resultElement.textContent = `✅ Prediction: ${data.prediction} (Confidence: ${data.confidence})`;
+          resultElement.style.color = "#2e7d32"; // green for normal
+        }
+      } catch (error) {
+        resultElement.textContent = "Error connecting to the backend!";
+        resultElement.style.color = "#d32f2f";
+      }
+    }
+  </script>
+</body>
+</html>
