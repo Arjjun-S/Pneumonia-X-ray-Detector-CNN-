@@ -1,16 +1,20 @@
+import os
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS  # <-- ADD THIS
 import tensorflow as tf
 import numpy as np
 from PIL import Image
 import io
 
+# Reduce TensorFlow logging
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 app = Flask(__name__)
 
-# Allow only your Vercel frontend
+# ✅ Allow requests ONLY from your Vercel frontend
 CORS(app, resources={r"/*": {"origins": "https://pneumonia-x-ray-detector-cnn.vercel.app"}})
 
-# Load model
+# Load your trained model
 model = tf.keras.models.load_model("pneumonia_model.h5")
 
 @app.route("/")
@@ -32,7 +36,7 @@ def predict():
     img = Image.open(io.BytesIO(file.read())).convert("L").resize((150, 150))
     img_array = np.array(img).reshape(1, 150, 150, 1) / 255.0
 
-    # Predict
+    # Make prediction
     prediction = model.predict(img_array)
     result = "PNEUMONIA" if prediction[0][0] > 0.5 else "NORMAL"
 
