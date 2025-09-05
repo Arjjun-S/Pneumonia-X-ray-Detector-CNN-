@@ -168,7 +168,7 @@
     resultElement.style.color = "#ff9800"; // orange while loading
 
     try {
-      const response = await fetch("https://pneumonia-x-ray-detector-cnn.onrender.com/predict", {
+      const response = await fetch("https://pneumonia-x-ray-detector-cnn.onrender.com", {
         method: 'POST',
         body: formData
       });
