@@ -15,10 +15,10 @@ def load_model():
 
 model = load_model()
 
-# ===== CUSTOM STYLING =====
+# ===== PAGE CONFIG =====
 st.set_page_config(page_title="Pneumonia Detector", page_icon="🩻", layout="centered")
 
-# Add custom CSS to mimic your HTML theme
+# ===== CUSTOM STYLING =====
 st.markdown("""
     <style>
     body {
@@ -32,16 +32,7 @@ st.markdown("""
         padding: 20px;
         border-radius: 10px;
         font-size: 24px;
-    }
-    .container {
-        background: white;
-        padding: 20px;
-        margin-top: 30px;
-        border-radius: 15px;
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
-        width: 380px;
-        margin-left: auto;
-        margin-right: auto;
+        margin-bottom: 20px;
     }
     footer {
         margin-top: 30px;
@@ -52,22 +43,20 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ===== APP HEADER =====
+# ===== HEADER =====
 st.markdown('<div class="main-header">Pneumonia Detector</div>', unsafe_allow_html=True)
-st.markdown("<br>", unsafe_allow_html=True)
 
-# ===== UPLOAD SECTION =====
-st.markdown('<div class="container">', unsafe_allow_html=True)
 st.write("Upload a chest X-ray image to check if it's **Normal** or **Pneumonia**.")
 
+# ===== FILE UPLOADER =====
 uploaded_file = st.file_uploader("Choose Image", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    # Show preview
+    # Display uploaded image
     image = Image.open(uploaded_file)
     st.image(image, caption="Uploaded X-ray", use_column_width=True)
 
-    # Preprocess image
+    # Preprocess the image
     img = image.convert("L").resize((150, 150))  # grayscale + resize
     img_array = np.array(img).reshape(1, 150, 150, 1) / 255.0
 
@@ -84,7 +73,5 @@ if uploaded_file is not None:
         else:
             st.success(f"**Prediction:** {result}\n\n**Confidence:** {confidence:.2f}")
 
-st.markdown('</div>', unsafe_allow_html=True)
-
 # ===== FOOTER =====
-st.markdown("<footer>&copy; Arjjun</footer>", unsafe_allow_html=True)
+st.markdown("<footer>&copy; Arjjun S </footer>", unsafe_allow_html=True)
