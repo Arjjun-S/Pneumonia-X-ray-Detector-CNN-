@@ -45,10 +45,10 @@ if uploaded_file is not None:
 
         # Show result
         if result == "PNEUMONIA":
-            st.error(f"⚠️ Prediction: {result}\n\nConfidence: {confidence:.2f}")
+            st.error(f"Prediction: {result}\n\nConfidence: {confidence:.2f}")
         else:
-            st.success(f"✅ Prediction: {result}\n\nConfidence: {confidence:.2f}")
+            st.success(f"Prediction: {result}\n\nConfidence: {confidence:.2f}")
 
 # Footer
 st.markdown("---")
-st.markdown("Made with ❤️ using Streamlit and TensorFlow")
+st.markdown("Made with using Streamlit and TensorFlow")
