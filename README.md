@@ -67,7 +67,7 @@ The model was trained using TensorFlow and Keras.
 
 ---
 
-## 📊 Model Performance
+## Model Performance
 The model was trained for **12 epochs** with data augmentation applied to prevent overfitting.
 
 | Metric          | Value |
@@ -77,7 +77,7 @@ The model was trained for **12 epochs** with data augmentation applied to preven
 
 ---
 
-## 📝 How It Works
+## How It Works
 1. **Input:** User uploads a chest X-ray image.
 2. **Preprocessing:**
    - Image is converted to grayscale.
@@ -90,7 +90,7 @@ The model was trained for **12 epochs** with data augmentation applied to preven
 
 ---
 
-## 🌐 Project Flow
+## Project Flow
 1. **Frontend (HTML/CSS/JS)**  
    - Simple interface for uploading chest X-ray images.
    - Sends the image to the backend API for prediction.
@@ -105,7 +105,7 @@ The model was trained for **12 epochs** with data augmentation applied to preven
 
 ---
 
-## 🚀 Deployment
+## Deployment
 ### **Frontend + Backend:**
 - **Backend:** Render (`Flask` + `Gunicorn`)
 - **Frontend:** Vercel (Static HTML, CSS, JS)
@@ -150,6 +150,6 @@ Below are placeholders for four images. Replace them with actual screenshots lat
    ```bash
    streamlit run streamlit_app.py
 
-## Author
-# Arjjun S
+# Author
+## Arjjun S
 Building solutions in deep learning and computer vision with a focus on real-world applications.
