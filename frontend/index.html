@@ -168,7 +168,7 @@
     resultElement.style.color = "#ff9800"; // orange while loading
 
     try {
-      const response = await fetch("https://pneumonia-x-ray-detector-cnn.onrender.com", {
+      const response = await fetch("https://pneumonia-x-ray-detector-cnn.onrender.com/predict", {
         method: 'POST',
         body: formData
       });
@@ -176,10 +176,10 @@
       const data = await response.json();
 
       if (data.prediction === "PNEUMONIA") {
-        resultElement.textContent = `⚠️ Prediction: ${data.prediction} (Confidence: ${data.confidence})`;
+        resultElement.textContent = `Prediction: ${data.prediction} (Confidence: ${data.confidence})`;
         resultElement.style.color = "#d32f2f"; // red for pneumonia
       } else {
-        resultElement.textContent = `✅ Prediction: ${data.prediction} (Confidence: ${data.confidence})`;
+        resultElement.textContent = `Prediction: ${data.prediction} (Confidence: ${data.confidence})`;
         resultElement.style.color = "#2e7d32"; // green for normal
       }
     } catch (error) {
