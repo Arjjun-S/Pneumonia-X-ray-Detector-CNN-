@@ -6,9 +6,11 @@ from PIL import Image
 import io
 
 app = Flask(__name__)
-CORS(app, origins=["https://pneumonia-x-ray-detector-cnn.vercel.app"])
 
-# Load your model
+# Allow only your Vercel frontend
+CORS(app, resources={r"/*": {"origins": "https://pneumonia-x-ray-detector-cnn.vercel.app"}})
+
+# Load model
 model = tf.keras.models.load_model("pneumonia_model.h5")
 
 @app.route("/")
@@ -16,7 +18,7 @@ def home():
     return "Pneumonia Prediction API is running!"
 
 @app.route("/healthz")
-def health():
+def health_check():
     return jsonify({"status": "ok"})
 
 @app.route("/predict", methods=["POST"])
@@ -25,9 +27,12 @@ def predict():
         return jsonify({"error": "No file provided"}), 400
 
     file = request.files['file']
+
+    # Preprocess image
     img = Image.open(io.BytesIO(file.read())).convert("L").resize((150, 150))
     img_array = np.array(img).reshape(1, 150, 150, 1) / 255.0
 
+    # Predict
     prediction = model.predict(img_array)
     result = "PNEUMONIA" if prediction[0][0] > 0.5 else "NORMAL"
 
