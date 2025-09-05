@@ -1,49 +1,54 @@
-import os
-from flask import Flask, request, jsonify
-from flask_cors import CORS  # <-- ADD THIS
+import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
 import io
+import os
 
-# Reduce TensorFlow logging
+# Reduce TensorFlow logs
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-app = Flask(__name__)
+# Load the trained CNN model
+@st.cache_resource  # Cache model to avoid reloading on every run
+def load_model():
+    model = tf.keras.models.load_model("pneumonia_model.h5")
+    return model
 
-# ✅ Allow requests ONLY from your Vercel frontend
-CORS(app, resources={r"/*": {"origins": "https://pneumonia-x-ray-detector-cnn.vercel.app"}})
+model = load_model()
 
-# Load your trained model
-model = tf.keras.models.load_model("pneumonia_model.h5")
+# Streamlit app UI
+st.set_page_config(page_title="Pneumonia X-ray Detector", page_icon="🩻", layout="centered")
 
-@app.route("/")
-def home():
-    return "Pneumonia Prediction API is running!"
+st.title("🩻 Pneumonia X-ray Detector")
+st.markdown("""
+Upload a chest X-ray image, and the model will predict whether it shows **Pneumonia** or is **Normal**.
+""")
 
-@app.route("/healthz")
-def health_check():
-    return jsonify({"status": "ok"})
+# File uploader
+uploaded_file = st.file_uploader("Choose a chest X-ray image", type=["jpg", "jpeg", "png"])
 
-@app.route("/predict", methods=["POST"])
-def predict():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file provided"}), 400
+if uploaded_file is not None:
+    # Display uploaded image
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded X-ray", use_column_width=True)
 
-    file = request.files['file']
-
-    # Preprocess image
-    img = Image.open(io.BytesIO(file.read())).convert("L").resize((150, 150))
+    # Preprocess the image
+    img = image.convert("L").resize((150, 150))  # grayscale and resize
     img_array = np.array(img).reshape(1, 150, 150, 1) / 255.0
 
-    # Make prediction
-    prediction = model.predict(img_array)
-    result = "PNEUMONIA" if prediction[0][0] > 0.5 else "NORMAL"
+    # Predict button
+    if st.button("Predict"):
+        with st.spinner("Analyzing X-ray..."):
+            prediction = model.predict(img_array)
+            result = "PNEUMONIA" if prediction[0][0] > 0.5 else "NORMAL"
+            confidence = float(prediction[0][0])
 
-    return jsonify({
-        "prediction": result,
-        "confidence": float(prediction[0][0])
-    })
+        # Show result
+        if result == "PNEUMONIA":
+            st.error(f"⚠️ Prediction: {result}\n\nConfidence: {confidence:.2f}")
+        else:
+            st.success(f"✅ Prediction: {result}\n\nConfidence: {confidence:.2f}")
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+# Footer
+st.markdown("---")
+st.markdown("Made with ❤️ using Streamlit and TensorFlow")
