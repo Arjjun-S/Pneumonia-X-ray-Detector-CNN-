@@ -17,7 +17,7 @@ def load_model():
 model = load_model()
 
 # Streamlit app UI
-st.set_page_config(page_title="Pneumonia X-ray Detector", page_icon="🩻", layout="centered")
+st.set_page_config(page_title="Pneumonia X-ray Detector", page_icon="", layout="centered")
 
 st.title("🩻 Pneumonia X-ray Detector")
 st.markdown("""
